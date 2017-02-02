@@ -1,0 +1,109 @@
+<html>
+  <head>
+
+       <link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+    <style>
+
+      pre{
+        border: none;
+        background-color: #fff;
+      }
+
+
+      .ft1{
+            color: #777;
+            height: 40px;
+            width : 48%;
+            padding-left: 1vw;
+            border-radius: 5px;
+            border : 1px solid #bdc7d8;
+       }
+
+       .ft2{
+            color: #777;
+            height: 40px;
+            width : 97%;
+            border-radius: 5px;
+            padding-left: 1vw;
+            border : 1px solid #bdc7d8;
+         }
+
+    </style>
+  </head>
+  <body>
+
+    <form action="http://192.168.122.1:8000/authenticate" method="get" >
+       <pre><input type="text" class="ft2" id="email" placeholder="Email"  required name="email" /></pre>
+       <pre><input type="password" class="ft2" id="pass1" placeholder="Password"  required name="pass1" /></pre>
+       <pre>                            <input type="submit" value="Submit" class="btn btn-primary btn-lg" />  </pre>
+    </form>
+
+    <script>
+
+
+
+    function validateForm() {
+          var flag=false;
+
+         var p1=document.getElementById("pass1").value;
+         var email=document.getElementById("email").value;
+
+         if(email.indexOf("@") > -1 && email.indexOf(".com") > -1)
+            {
+              console.log("success");
+              flag=true;
+            }
+          else{
+              alert("Email Incorrect");
+              console.log("failed");
+              return false;
+            }
+
+        if(flag === true)
+        {    var index=0;
+             var str1 = localStorage.getItem("usr1");
+             var str2 = localStorage.getItem("passt1");
+          //  var str1 = localStorage.getItem("newuser");
+          //  var str2 = localStorage.getItem("passt1");
+            console.log("inside");
+            var ucheck=JSON.parse(str1);
+            var pcheck=JSON.parse(str2);
+
+            flag=false;
+
+        /*     if(email === ucheck.email && p1 === ucheck.password)
+             {
+                  flag=true;
+             }
+             else{
+                  alert("Incorrect credentials!");
+             }
+           */
+           console.log("checking...");
+            for(i in ucheck)
+             {
+                     if(email == ucheck[i] && p1 == pcheck[i])
+                     {   index=i;
+                         flag=true;
+                         console.log("record found, reverting...");
+                         break;
+                      }
+             }
+           localStorage.setItem("index",index);
+           console.log("index opened");
+        }
+
+
+        console.log("end");
+       return flag;
+      }
+
+    </script>
+  </body>
+  </html>

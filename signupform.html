@@ -1,0 +1,147 @@
+<html>
+  <head>
+       <link href="https://fonts.googleapis.com/css?family=Roboto:100" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+
+    <style>
+
+      pre{
+        border: none;
+        background-color: #fff;
+      }
+
+
+      .ft1{
+            color: #777;
+            height: 40px;
+            width : 48%;
+            padding-left: 1vw;
+            border-radius: 5px;
+            border : 1px solid #bdc7d8;
+       }
+
+       .ft2{
+            color: #777;
+            height: 40px;
+            width : 97%;
+            border-radius: 5px;
+            padding-left: 1vw;
+            border : 1px solid #bdc7d8;
+         }
+
+    </style>
+  </head>
+  <body>
+
+    <form action="http://192.168.122.1:8000/signup" method="get">
+       <pre><input type="text"     class="ft1" id="fname" placeholder="First name" required name="fname" pattern="[A-Za-z]+"/> <input class="ft1" placeholder="Last Name" type="text" id="lname" required name="lname" /></pre>
+       <pre><input type="text"     class="ft2" id="email" placeholder="Email"  required name="email" /></pre>
+       <pre><input type="text"     class="ft2" id="contact" placeholder="Contact"  required name="contact" /></pre>
+       <pre><input type="password" class="ft2" id="pass1" placeholder="Password"  required name="pass1" /></pre>
+       <pre><input type="password" class="ft2" id="pass2" placeholder="Retype Password" required name="pass2" /></pre>
+       <pre>                             <input type="submit"  value="Submit" class="btn btn-primary btn-lg" />  </pre>
+    </form>
+
+    <script>
+    console.log("signingUp...");
+
+    function validateForm() {
+          var flag=false;
+
+         var p1=document.getElementById("pass1").value;
+         var p2=document.getElementById("pass2").value;
+         var email=document.getElementById("email").value;
+         var contact = document.getElementById("contact").value;
+
+         if(email.indexOf("@") > -1 && email.indexOf(".com") > -1)
+            {
+
+              console.log("email accepted");
+              flag=true;
+            }
+            else{
+              window.alert("email invalid");
+              console.log("email invalid");
+              return false;
+            }
+
+            var phoneno = /^\d{10}$/;
+          if(contact.match(phoneno))
+            {   console.log("phone accepted");
+                flag = true;
+            }
+          else
+            {   alert("phone invalid");
+                return false;
+            }
+
+        var decimal=  /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{8,15}$/;
+        if(!p1.match(decimal))
+        {
+          alert("password must have 8 to 15 characters");
+          flag= false;
+          return flag;
+
+        }
+
+       if(p1 === p2)
+         {  console.log("password accepted");
+            flag = true;
+
+         }
+         else{
+           window.alert("password dont match");
+           console.log("pass dont match");
+           return false;
+         }
+
+
+
+       if(flag == true)
+        {
+          var fnm   = document.getElementById("fname").value;
+          var lnm   = document.getElementById("lname").value;
+          var newuser1={"fname":fnm, "lname":lnm, "email":email, "contact":contact, "password":p1};
+          var users = JSON.parse(localStorage.getItem("usr1"));
+          var passes = JSON.parse(localStorage.getItem("passt1"));
+
+          for(i in users)
+          {
+            if(newuser1.email === users[i])
+            {
+                console.log("user exists!...");
+                flag=false;
+                break;
+            }
+
+          }
+
+          if(flag == true)
+        {
+          console.log("updating database... \n");
+          users.push(newuser1.email);
+          passes.push(newuser1.password);
+          var userdatabase = JSON.stringify(users);
+          var passdatabase = JSON.stringify(passes);
+          localStorage.setItem("usr1",userdatabase);
+          localStorage.setItem("passt1",passdatabase);
+          console.log("database updated \n");
+          console.log(userdatabase +"\n\n"+passdatabase);
+          var str=JSON.stringify(newuser1);
+          localStorage.setItem("newuser",str);
+          console.log("user saved \n\n"+str);
+        }
+
+        }
+
+       return flag;
+      }
+
+    </script>
+  </body>
+  </html>
