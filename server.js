@@ -38,15 +38,42 @@ server.register(require('hapi-auth-basic'), function (err) {
 
     server.auth.strategy('simple', 'basic', {
         validateFunc: function (request, username, password, callback){
+            pool.getConnection(function(err,connection){
+                if(err) throw err;
+                console.log("auth con created");
+                connection.query("select * from users",function(err,rows,feilds)
+                {   if(err)
+                    throw err;
+                    var flag=false;
+                   console.log("auth query made");
 
-            if (username == 'admin') {
-                return callback(null, true, {scope: 'admin'}); // They're an `admin`
-            }
-            else if (username == 'user') {
-                return callback(null, true, {scope: 'user'}); // They're a `user`
-            }
-            else
-              {  return callback(null, false);}
+                    for(x in rows)
+                    {  console.log("in loop");
+                      if(username == rows[x].ID && rows[x].roles == 'admin')
+                      { flag=true;
+                        console.log("admin found ");
+                        return callback(null, true, {scope: 'admin'});
+                      }
+                      else if (username == rows[x].ID && rows[x].roles == 'user') {
+                         flag=true;
+                         console.log("user found ");
+                          return callback(null, true, {scope: 'user'}); // They're a `user`
+                      }
+                      else
+                        { console.log("nothing found");
+                          }
+                   }
+                   if(flag ==false)
+                   {
+                     return callback(null,false);
+                   }
+
+                });
+
+                   connection.release();
+            });
+
+
         }
     });
 
@@ -126,7 +153,7 @@ server.route({
     }
 
 
-    connection.query("INSERT INTO users SET ?",post,function(err,rows){
+    connection.query("INSERT INTO users SET ?",post,function(err,rows,feilds){
                 if(err) {
             throw err;
         }
@@ -145,22 +172,43 @@ server.route({
 });
 
 
+server.route({
+  method: 'GET',
+  path  :'/deleteuser',
+  handler :  function(request,reply){
+      var params = request.query;
 
-        /* var params = request.query;
-         connection.connect();
-         var post = {ID:params.email, password:params.pass1, roles: "admin"};
+      pool.getConnection(function(err,connection){
+        if(err) throw err;
+        var userid;
 
-         connection.query('INSERT INTO users SET ?',post,function(err, result){
-              if(err)
-              {throw err;}
+        connection.query("select * from users",function(err,rows){
+            for(x in rows)
+            {
+              if(rows[x].ID == params.email)
+              {
+                userid = rows[x].ID;
+                break;
+              }
+            }
+            if(userid)
+            {
+              pool.getConnection(function(err,connection2){
+                if(err) throw err;
 
-              console.log("signup successful");
-              reply("success");
-         });
+               connection2.query("delete from users where ID = ?",userid,function(err,result){
+                 if(err) throw err;
+                  console.log("user deleted");
+                 });
 
-         connection.end();
-      */
-
+                 connection2.release();
+               });
+            }
+        });
+        connection.release();
+      });
+  }
+});
 
 server.route({
     method: 'GET',
